@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from disciplina import Disciplina
-from urls import URLS
+
+from .disciplina import Disciplina
+from .urls import URLS
 
 
 class Instituto:
@@ -32,7 +33,8 @@ class Instituto:
         if self._carregado:
             return
 
-        response = requests.get(self.url_listagem)
+        response = requests.get(self.url_listagem, timeout=10)
+        response.raise_for_status()
         response.encoding = "iso-8859-1"
         soup = BeautifulSoup(response.text, "html.parser")
 
