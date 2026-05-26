@@ -1,3 +1,6 @@
+import requests
+from bs4 import BeautifulSoup
+
 from .disciplina import Disciplina
 from .urls import URLS
 
@@ -18,7 +21,7 @@ class Instituto:
         return ""
 
     def __str__(self) -> str:
-        return ""
+        return self.nome + " (" + self.codigo + ") - " + self.campus
 
     def _carregar(self) -> None:
         """
@@ -27,7 +30,24 @@ class Instituto:
         disciplinas, que é feito sob demanda).
         """
 
-        pass
+        if self._carregado:
+            return
+
+        response = requests.get(self.url_listagem, timeout=10)
+        response.raise_for_status()
+        response.encoding = "iso-8859-1"
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        tables = soup.find_all("table")
+        disciplinas_table = tables[2]
+        disciplina_rows = disciplinas_table.find_all("tr")[1:]
+
+        for row in disciplina_rows:
+            tds = row.find_all("td")
+            sigla = tds[0].find("span").text.strip()
+            self.disciplinas.append(Disciplina(sigla))
+
+        self._carregado = True
 
     @property
     def url_listagem(self) -> str:
@@ -42,4 +62,7 @@ class Instituto:
         Retorna lista de disciplinas oferecidas no instituto.
         """
 
-        return []
+        if not self._carregado:
+            self._carregar()
+
+        return self.disciplinas
