@@ -1,8 +1,6 @@
-import requests
-from bs4 import BeautifulSoup
-
 from .disciplina import Disciplina
 from .urls import URLS
+from .utils import obter_soup
 
 
 class Instituto:
@@ -18,10 +16,10 @@ class Instituto:
         self._carregado = False
 
     def __repr__(self) -> str:
-        return ""
+        return f"Instituto(codigo='{self.codigo}',nome='{self.nome}',campus='{self.campus}')"
 
     def __str__(self) -> str:
-        return self.nome + " (" + self.codigo + ") - " + self.campus
+        return f"{self.nome} ({self.codigo}) - Campus {self.campus}"
 
     def _carregar(self) -> None:
         """
@@ -33,10 +31,7 @@ class Instituto:
         if self._carregado:
             return
 
-        response = requests.get(self.url_listagem, timeout=10)
-        response.raise_for_status()
-        response.encoding = "iso-8859-1"
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = obter_soup(self.url_listagem)
 
         tables = soup.find_all("table")
         disciplinas_table = tables[2]
