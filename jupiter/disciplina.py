@@ -87,15 +87,12 @@ class Disciplina:
 
         # ----- Texto centralizado -----
         centered_text = [i.get_text(strip=True) for i in table.select("td[align='CENTER']")]
+        centered_text = [(centered_text[i] if len(centered_text) > i else "") for i in range(4)]
 
-        if len(centered_text) > 0:
-            self._dados["instituto"] = centered_text[0]
-        if len(centered_text) > 1:
-            self._dados["departamento"] = centered_text[1]
-        if len(centered_text) > 2:
-            self._dados["nome"] = centered_text[2].removeprefix("Disciplina:").strip()
-        if len(centered_text) > 3:
-            self._dados["nome ingles"] = centered_text[3]
+        self._dados["instituto"] = centered_text[0]
+        self._dados["departamento"] = centered_text[1]
+        self._dados["nome"] = centered_text[2].removeprefix("Disciplina:").strip()
+        self._dados["nome ingles"] = centered_text[3]
 
         # ----- Texto livre -----
         span_text = table.select("span.txt_arial_8pt_gray, span.txt_arial_8pt_black")
@@ -186,7 +183,68 @@ class Disciplina:
         Faz scraping da pagina de oferecimento da disciplina e armazena os dados obtidos.
         """
 
-        pass
+        self._dados["oferecimento"] = []
+
+        soup = obter_soup(self.url_oferecimento)
+        table = soup.select_one("div#layout_principal > table:nth-of-type(4)")
+
+        if not table:
+            return  # sem oferecimentos
+
+        boxes = table.select_one("td").find_all("div", recursive=False)
+
+        for box in boxes:
+            box_tables = box.find_all("table", recursive=False)
+
+            # ----- Informacao basica -----
+            info_text = [i.get_text(strip=True) for i in box_tables[0].select("span.txt_arial_8pt_gray")]
+            info_text = [(info_text[i] if len(info_text) > i else "") for i in range(5)]
+
+            oferecimento = Oferecimento(
+                codigo=info_text[0],
+                data_inicio=info_text[1],
+                data_fim=info_text[2],
+                tipo_turma=info_text[3],
+                observacoes=info_text[4],
+                sigla_disciplina=self.sigla,
+            )
+
+            # ----- Horarios -----
+            horarios_rows = box_tables[1].find_all("tr", recursive=False)[1:]
+
+            for row in horarios_rows:
+                row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
+                row_text = [(row_text[i] if len(row_text) > i else "") for i in range(4)]
+
+                oferecimento.adicionar_horario(row_text[0], row_text[1], row_text[2], row_text[3])
+
+            # ----- Vagas -----
+            vagas_rows = box_tables[2].find_all("tr", recursive=False)
+            vagas_labels = [i.get_text(strip=True).lower() for i in vagas_rows[0].find_all("td", recursive=False)][1:]
+            vagas_labels = [self._normalizar_titulo(i) for i in vagas_labels]
+
+            tipo_vaga = ""
+
+            for row in vagas_rows[1:]:
+                row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
+
+                istitle = row_text[0] != ""
+                if not istitle:
+                    row_text = row_text[1:]
+
+                row_name = row_text[0]
+                row_vals = [(int(i) if i.isnumeric() else "-") for i in row_text[1:]]
+                row_vals = [(row_vals[i] if len(row_vals) > i else "-") for i in range(len(vagas_labels))]
+                row_items = {vagas_labels[i]: row_vals[i] for i in range(len(vagas_labels))}
+
+                if istitle:  # novo tipo de vaga
+                    tipo_vaga = self._normalizar_titulo(row_name)
+                    oferecimento.vagas[tipo_vaga] = row_items
+                    oferecimento.vagas[tipo_vaga]["cursos"] = {}
+                else:
+                    oferecimento.vagas[tipo_vaga]["cursos"][row_name] = row_items
+
+            self._dados["oferecimento"].append(oferecimento)
 
     def _carregar(self) -> None:
         """
@@ -201,6 +259,13 @@ class Disciplina:
         self._carregar_requisitos()
         self._carregar_oferecimento()
         self._carregado = True
+
+    def possui_oferecimento(self) -> bool:
+        """
+        Verifica se disciplina tem algum oferecimento no semestre atual.
+        """
+
+        return bool(self.obter_dados().get("oferecimento"))
 
 
 class Requisito:
@@ -226,11 +291,57 @@ class Requisito:
         return Disciplina(self.sigla)
 
 
-# TODO Remover
-def main() -> None:
-    d = Disciplina("mac0110")
-    print(d["instrumentos e criterios de avaliacao"]["norma de recuperacao"])
+class Oferecimento:
+    """
+    Oferecimento de turma no Jupiterweb.
+    """
+
+    def __init__(
+        self,
+        codigo: str,
+        data_inicio: str,
+        data_fim: str,
+        tipo_turma: str,
+        observacoes: str = "",
+        sigla_disciplina: str = "",
+    ) -> None:
+        self.codigo = str(codigo).upper()
+        self.data_inicio = data_inicio
+        self.data_fim = data_fim
+        self.tipo_turma = str(tipo_turma).lower()
+        self.observacoes = observacoes
+        self.sigla_disciplina = str(sigla_disciplina).upper()
+        self.horarios: list[HorarioAula] = []
+        self.vagas = {}
+
+    def __repr__(self) -> str:
+        return f"Oferecimento(codigo='{self.codigo}',data_inicio='{self.data_inicio}',data_fim='{self.data_fim}',tipo_turma='{self.tipo_turma}',observacoes='{self.observacoes}',sigla_disciplina='{self.sigla_disciplina}')"
+
+    def __str__(self) -> str:
+        return f"Turma {self.codigo}"
+
+    def adicionar_horario(self, dia_semana: str, hora_inicio: str, hora_fim: str, professor: str) -> None:
+        """
+        Adiciona horario de aula ao oferecimento.
+        """
+
+        horario = HorarioAula(dia_semana, hora_inicio, hora_fim, professor)
+        self.horarios.append(horario)
 
 
-if __name__ == "__main__":
-    main()
+class HorarioAula:
+    """
+    Horario de aula no Jupiterweb.
+    """
+
+    def __init__(self, dia_semana: str, hora_inicio: str, hora_fim: str, professor: str) -> None:
+        self.dia_semana = str(dia_semana).lower()
+        self.hora_inicio = hora_inicio
+        self.hora_fim = hora_fim
+        self.professor = professor
+
+    def __repr__(self) -> str:
+        return f"HorarioAula(dia_semana='{self.dia_semana}',hora_inicio='{self.hora_inicio}',hora_fim='{self.hora_fim}',professor='{self.professor}')"
+
+    def __str__(self) -> str:
+        return f"{self.dia_semana} ({self.hora_inicio} - {self.hora_fim}) Prof(a). {self.professor}"
