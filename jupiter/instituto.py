@@ -9,7 +9,7 @@ class Instituto:
     """
 
     def __init__(self, codigo: str, nome: str, campus: str) -> None:
-        self.codigo = codigo
+        self.codigo = str(codigo)
         self.nome = nome
         self.campus = campus
         self.disciplinas = []
