@@ -91,7 +91,7 @@ class Disciplina:
 
         self._dados["instituto"] = centered_text[0]
         self._dados["departamento"] = centered_text[1]
-        self._dados["nome"] = centered_text[2].removeprefix("Disciplina:").strip()
+        self._dados["nome"] = centered_text[2].removeprefix("Disciplina:").split("-", 1)[1].strip()
         self._dados["nome ingles"] = centered_text[3]
 
         # ----- Texto livre -----
