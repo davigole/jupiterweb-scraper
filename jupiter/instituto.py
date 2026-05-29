@@ -9,7 +9,7 @@ class Instituto:
     """
 
     def __init__(self, codigo: str, nome: str, campus: str) -> None:
-        self.codigo = codigo
+        self.codigo = str(codigo)
         self.nome = nome
         self.campus = campus
         self.disciplinas = []
@@ -32,14 +32,11 @@ class Instituto:
             return
 
         soup = obter_soup(self.url_listagem)
-
-        tables = soup.find_all("table")
-        disciplinas_table = tables[2]
-        disciplina_rows = disciplinas_table.find_all("tr")[1:]
+        disciplina_rows = soup.select("tr[bgcolor='#658CCF'] ~tr")
 
         for row in disciplina_rows:
             tds = row.find_all("td")
-            sigla = tds[0].find("span").text.strip()
+            sigla = tds[0].find("span").get_text(strip=True)
             self.disciplinas.append(Disciplina(sigla))
 
         self._carregado = True
