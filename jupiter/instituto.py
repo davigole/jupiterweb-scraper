@@ -20,7 +20,7 @@ class Instituto:
         return f"Instituto(codigo='{self.codigo}',nome='{self.nome}',campus='{self.campus}',abrev='{self.abrev}')"
 
     def __str__(self) -> str:
-        return f"{self.nome} ({self.codigo}) - Campus {self.campus}"
+        return self.nome
 
     def _carregar(self) -> None:
         """
