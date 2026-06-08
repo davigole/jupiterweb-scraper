@@ -271,28 +271,27 @@ class Disciplina:
     def mostrar(self, trunc_str: bool = True) -> None:
         """
         Mostra dados da disciplina de forma legivel. Utilizada principalmente
-        para debug. Se trunc_str = True, strings com mais de 100 caracteres
-        serao truncadas para evitar poluicao visual.
+        para debug. Se trunc_str = True, strings longas serao truncadas.
         """
 
-        for key, val in self.obter_dados().items():
-            print(f"\033[0;36m---\033[0m \033[1m{key}\033[0m \033[0;36m{'-'*max(0, 120 - len(key) - 5)}\033[0m")
-            if not val:
-                print("(VAZIO)")
-            elif isinstance(val, dict):
-                print()
-                for subkey, subval in val.items():
-                    print(
-                        f"\033[0;33m -----\033[0m \033[1m{subkey}\033[0m \033[0;33m{'-'*max(0, 120 - len(subkey) - 8)}\033[0m"
-                    )
-                    print(truncate_string(subval, 100) if trunc_str and isinstance(subval, str) else subval)
-                    print()
-            elif isinstance(val, str):
-                print(truncate_string(val, 100) if trunc_str else val)
-            else:
-                print(val)
+        LARGURA = 120
 
-            print()
+        for key, val in self.obter_dados().items():
+            print(f"\n{key}{'─'*max(0, LARGURA-len(key))}")
+
+            if not val:
+                print("  (vazio)")
+            elif isinstance(val, dict):
+                for subkey, subval in val.items():
+                    print(f" {subkey}{'─'*max(0, LARGURA-len(subkey)-1)}")
+
+                    if isinstance(subval, str) and trunc_str:
+                        subval = truncate_string(subval, LARGURA - 4)
+                    print(f"    {subval}")
+            else:
+                if isinstance(val, str) and trunc_str:
+                    val = truncate_string(val, LARGURA - 2)
+                print(f"  {val}")
 
 
 class Requisito:

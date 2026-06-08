@@ -22,4 +22,4 @@ def truncate_string(s: str, max_length: int) -> str:
 
     if len(s) <= max_length:
         return s
-    return s[:max_length] + "..."
+    return s[: max(max_length - 3, 0)] + "..."
