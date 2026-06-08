@@ -13,3 +13,13 @@ def obter_soup(url: str) -> BeautifulSoup:
     soup = BeautifulSoup(response.text, "html.parser")
 
     return soup
+
+
+def truncate_string(s: str, max_length: int) -> str:
+    """
+    Trunca string para um comprimento máximo, adicionando "..." no final se necessário.
+    """
+
+    if len(s) <= max_length:
+        return s
+    return s[:max_length] + "..."

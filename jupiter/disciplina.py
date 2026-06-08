@@ -4,7 +4,7 @@ from typing import Any
 from warnings import warn
 
 from .urls import URLS
-from .utils import obter_soup
+from .utils import obter_soup, truncate_string
 
 
 class Disciplina:
@@ -96,34 +96,36 @@ class Disciplina:
         # ----- Texto livre -----
         span_text = table.select("span.txt_arial_8pt_gray, span.txt_arial_8pt_black")
 
-        title = ""  # guardar texto em self._dados[title] (se subtitle = "")
+        title = ""  # guardar texto em self._dados[title] (se subtitle == "")
         subtitle = ""  # guardar texto em self._dados[title][subtitle] (se subtitle != "")
+        subtitle_tab = None  # tabela em que subtitle foi encontrado
+        added_text = False  # se texto ja foi adicionado ao titulo atual (nao pode ter subtitulos)
 
-        for t in span_text:
-            txt = t.get_text(strip=True, separator="\n")
+        for span in span_text:
+            text = span.get_text(strip=True, separator="\n")
 
-            if "txt_arial_8pt_black" in t["class"]:  # titulo ou subtitulo
-                txt = self._normalizar_titulo(txt)
-                parent = t.find_parent("table")
-                grandparent = parent.find_parent("table") if parent else None
+            if span.has_attr("class") and "txt_arial_8pt_black" in span["class"]:  # titulo ou subtitulo
+                text = self._normalizar_titulo(text)
+                tab = span.find_parent("table")
 
-                if grandparent == table:  # nivel principal (titulo)
-                    title = txt
-                    subtitle = ""
-                    self._dados[title] = ""
-                else:  # nivel secundario (titulo > subtitulo)
-                    subtitle = txt
-                    if isinstance(self._dados[title], str):
+                if title and ((not subtitle and not added_text) or (subtitle and tab == subtitle_tab)):  # subtitulo
+                    subtitle = text
+                    subtitle_tab = tab
+
+                    if (title not in self._dados) or (not isinstance(self._dados[title], dict)):
                         self._dados[title] = {}
                     self._dados[title][subtitle] = ""
-            elif subtitle:  # adicionar texto ao subtitulo
-                if txt and self._dados[title][subtitle]:
-                    txt = "\n" + txt
-                self._dados[title][subtitle] += txt
-            else:  # adicionar texto a titulo
-                if txt and self._dados[title]:
-                    txt = "\n" + txt
-                self._dados[title] += txt
+                else:  # titulo
+                    title = text
+                    subtitle = ""
+                    self._dados[title] = ""
+                added_text = False
+            else:  # texto
+                if subtitle:
+                    self._dados[title][subtitle] += "\n" + text if self._dados[title][subtitle] and text else text
+                else:
+                    self._dados[title] += "\n" + text if self._dados[title] and text else text
+                    added_text = True  # mesmo se text = "" o titulo nao pode ter subtitulos
 
     def _carregar_requisitos(self) -> None:
         """
@@ -265,6 +267,32 @@ class Disciplina:
         """
 
         return bool(self.obter_dados().get("oferecimento"))
+
+    def mostrar(self, trunc_str: bool = True) -> None:
+        """
+        Mostra dados da disciplina de forma legivel. Utilizada principalmente
+        para debug. Se trunc_str = True, strings com mais de 100 caracteres
+        serao truncadas para evitar poluicao visual.
+        """
+
+        for key, val in self.obter_dados().items():
+            print(f"\033[0;36m---\033[0m \033[1m{key}\033[0m \033[0;36m{'-'*max(0, 120 - len(key) - 5)}\033[0m")
+            if not val:
+                print("(VAZIO)")
+            elif isinstance(val, dict):
+                print()
+                for subkey, subval in val.items():
+                    print(
+                        f"\033[0;33m -----\033[0m \033[1m{subkey}\033[0m \033[0;33m{'-'*max(0, 120 - len(subkey) - 8)}\033[0m"
+                    )
+                    print(truncate_string(subval, 100) if trunc_str and isinstance(subval, str) else subval)
+                    print()
+            elif isinstance(val, str):
+                print(truncate_string(val, 100) if trunc_str else val)
+            else:
+                print(val)
+
+            print()
 
 
 class Requisito:
