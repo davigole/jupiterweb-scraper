@@ -1,0 +1,382 @@
+{
+    "1": {
+        "nome": "Pró-Reitoria de Graduação - Cursos Interunidades",
+        "campus": "Butantã",
+        "abrev": "PRG"
+    },
+    "2": {
+        "nome": "Faculdade de Direito",
+        "campus": "Quadrilátero",
+        "abrev": "FD"
+    },
+    "3": {
+        "nome": "Escola Politécnica",
+        "campus": "Butantã",
+        "abrev": "POLI"
+    },
+    "4": {
+        "nome": "Instituto de Energia e Ambiente",
+        "campus": "Butantã",
+        "abrev": "IEE"
+    },
+    "5": {
+        "nome": "Faculdade de Medicina",
+        "campus": "Quadrilátero",
+        "abrev": "FM"
+    },
+    "6": {
+        "nome": "Faculdade de Saúde Pública",
+        "campus": "Quadrilátero",
+        "abrev": "FSP"
+    },
+    "7": {
+        "nome": "Escola de Enfermagem",
+        "campus": "Quadrilátero",
+        "abrev": "EE"
+    },
+    "8": {
+        "nome": "Faculdade de Filosofia, Letras e Ciências Humanas",
+        "campus": "Butantã",
+        "abrev": "FFLCH"
+    },
+    "9": {
+        "nome": "Faculdade de Ciências Farmacêuticas",
+        "campus": "Butantã",
+        "abrev": "FCF"
+    },
+    "10": {
+        "nome": "Faculdade de Medicina Veterinária e Zootecnia",
+        "campus": "Butantã",
+        "abrev": "FMVZ"
+    },
+    "11": {
+        "nome": "Escola Superior de Agricultura \"Luiz de Queiroz\"",
+        "campus": "Piracicaba",
+        "abrev": "ESALQ"
+    },
+    "12": {
+        "nome": "Faculdade de Economia, Administração, Contabilidade e Atuária",
+        "campus": "Butantã",
+        "abrev": "FEA"
+    },
+    "13": {
+        "nome": "Escola Politécnica e Faculdade de Medicina",
+        "campus": "Butantã",
+        "abrev": "POLI/FM"
+    },
+    "14": {
+        "nome": "Instituto de Astronomia, Geofísica e Ciências Atmosféricas",
+        "campus": "Butantã",
+        "abrev": "IAG"
+    },
+    "15": {
+        "nome": "Faculdade de Odontologia, Instituto de Ciências Biomédicas, Instituto de Química e Instituto de Biociências",
+        "campus": "Butantã",
+        "abrev": "FO/ICB/IQ/IB"
+    },
+    "16": {
+        "nome": "Faculdade de Arquitetura e Urbanismo e de Design",
+        "campus": "Butantã",
+        "abrev": "FAU"
+    },
+    "17": {
+        "nome": "Faculdade de Medicina de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FMRP"
+    },
+    "18": {
+        "nome": "Escola de Engenharia de São Carlos",
+        "campus": "São Carlos",
+        "abrev": "EESC"
+    },
+    "20": {
+        "nome": "Escola Politécnica, Instituto de Matemática, Estatística e Ciência da Computação, Instituto de Física",
+        "campus": "Butantã",
+        "abrev": "POLI/IME/IF"
+    },
+    "21": {
+        "nome": "Instituto Oceanográfico",
+        "campus": "Butantã",
+        "abrev": "IO"
+    },
+    "22": {
+        "nome": "Escola de Enfermagem de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "EERP"
+    },
+    "23": {
+        "nome": "Faculdade de Odontologia",
+        "campus": "Butantã",
+        "abrev": "FO"
+    },
+    "24": {
+        "nome": "Faculdade de Medicina de Bauru",
+        "campus": "Bauru",
+        "abrev": "FMBRU"
+    },
+    "25": {
+        "nome": "Faculdade de Odontologia de Bauru",
+        "campus": "Bauru",
+        "abrev": "FOB"
+    },
+    "26": {
+        "nome": "Instituto de Astronomia, Geofísica e Ciências Atmosféricas e Instituto de Geociências",
+        "campus": "Butantã",
+        "abrev": "IAG/IGc"
+    },
+    "27": {
+        "nome": "Escola de Comunicações e Artes",
+        "campus": "Butantã",
+        "abrev": "ECA"
+    },
+    "30": {
+        "nome": "Centro de Biologia Marinha",
+        "campus": "São Sebastião",
+        "abrev": "CEBIMar"
+    },
+    "31": {
+        "nome": "Instituto de Estudos Brasileiros",
+        "campus": "Butantã",
+        "abrev": "IEB"
+    },
+    "32": {
+        "nome": "Museu de Arte Contemporânea",
+        "campus": "Butantã",
+        "abrev": "MAC"
+    },
+    "33": {
+        "nome": "Museu Paulista",
+        "campus": "Ipiranga",
+        "abrev": "MP"
+    },
+    "37": {
+        "nome": "Instituto de Estudos Avançados",
+        "campus": "Butantã",
+        "abrev": "IEA"
+    },
+    "38": {
+        "nome": "Museu de Zoologia",
+        "campus": "Ipiranga",
+        "abrev": "MZUSP"
+    },
+    "39": {
+        "nome": "Escola de Educação Física e Esporte",
+        "campus": "Butantã",
+        "abrev": "EEFE"
+    },
+    "41": {
+        "nome": "Instituto de Biociências",
+        "campus": "Butantã",
+        "abrev": "IB"
+    },
+    "42": {
+        "nome": "Instituto de Ciências Biomédicas",
+        "campus": "Butantã",
+        "abrev": "ICB"
+    },
+    "43": {
+        "nome": "Instituto de Física",
+        "campus": "Butantã",
+        "abrev": "IF"
+    },
+    "44": {
+        "nome": "Instituto de Geociências",
+        "campus": "Butantã",
+        "abrev": "IGc"
+    },
+    "45": {
+        "nome": "Instituto de Matemática, Estatística e Ciência da Computação",
+        "campus": "Butantã",
+        "abrev": "IME"
+    },
+    "46": {
+        "nome": "Instituto de Química",
+        "campus": "Butantã",
+        "abrev": "IQ"
+    },
+    "47": {
+        "nome": "Instituto de Psicologia",
+        "campus": "Butantã",
+        "abrev": "IP"
+    },
+    "48": {
+        "nome": "Faculdade de Educação",
+        "campus": "Butantã",
+        "abrev": "FE"
+    },
+    "55": {
+        "nome": "Instituto de Ciências Matemáticas e de Computação",
+        "campus": "São Carlos",
+        "abrev": "ICMC"
+    },
+    "58": {
+        "nome": "Faculdade de Odontologia de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FORP"
+    },
+    "59": {
+        "nome": "Faculdade de Filosofia, Ciências e Letras de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FFCLRP"
+    },
+    "60": {
+        "nome": "Faculdade de Ciências Farmacêuticas de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FCFRP"
+    },
+    "61": {
+        "nome": "Hospital de Reabilitação de Anomalias Craniofaciais",
+        "campus": "Bauru",
+        "abrev": "HRAC"
+    },
+    "64": {
+        "nome": "Centro de Energia Nuclear na Agricultura",
+        "campus": "Piracicaba",
+        "abrev": "CENA"
+    },
+    "65": {
+        "nome": "Pró-Reitoria de Graduação - Licenciatura em Ciências - Semipresencial",
+        "campus": "Butantã",
+        "abrev": "PRG-LC"
+    },
+    "66": {
+        "nome": "Física Médica - Instituto de Física e Faculdade de Medicina",
+        "campus": "Butantã",
+        "abrev": "IF/FM"
+    },
+    "67": {
+        "nome": "Faculdade de Medicina, Instituto de Ciências Biomédicas, Instituto de Química e Instituto de Biociências",
+        "campus": "Quadrilátero",
+        "abrev": "FM/ICB/IQ/IB"
+    },
+    "68": {
+        "nome": "Faculdade de Odontologia e Instituto de Ciências Biomédicas",
+        "campus": "Butantã",
+        "abrev": "FO/ICB"
+    },
+    "69": {
+        "nome": "Instituto de Biociências e Faculdade de Arquitetura e Urbanismo",
+        "campus": "Butantã",
+        "abrev": "IB/FAU"
+    },
+    "71": {
+        "nome": "Museu de Arqueologia e Etnologia",
+        "campus": "Butantã",
+        "abrev": "MAE"
+    },
+    "74": {
+        "nome": "Faculdade de Zootecnia e Engenharia de Alimentos",
+        "campus": "Pirassununga",
+        "abrev": "FZEA"
+    },
+    "75": {
+        "nome": "Instituto de Química de São Carlos",
+        "campus": "São Carlos",
+        "abrev": "IQSC"
+    },
+    "76": {
+        "nome": "Instituto de Física de São Carlos",
+        "campus": "São Carlos",
+        "abrev": "IFSC"
+    },
+    "81": {
+        "nome": "Faculdade de Economia, Administração e Contabilidade de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FEARP"
+    },
+    "83": {
+        "nome": "Instituto de Medicina Tropical de São Paulo",
+        "campus": "Quadrilátero",
+        "abrev": "IMT"
+    },
+    "85": {
+        "nome": "Instituto de Pesquisas Energéticas e Nucleares",
+        "campus": "Butantã",
+        "abrev": "IPEN"
+    },
+    "86": {
+        "nome": "Escola de Artes, Ciências e Humanidades",
+        "campus": "Leste",
+        "abrev": "EACH"
+    },
+    "87": {
+        "nome": "Instituto de Relações Internacionais",
+        "campus": "Butantã",
+        "abrev": "IRI"
+    },
+    "88": {
+        "nome": "Escola de Engenharia de Lorena",
+        "campus": "Lorena",
+        "abrev": "EEL"
+    },
+    "89": {
+        "nome": "Faculdade de Direito de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FDRP"
+    },
+    "90": {
+        "nome": "Licenciatura em Ciências Exatas - São Carlos",
+        "campus": "São Carlos",
+        "abrev": "LCE"
+    },
+    "91": {
+        "nome": "Faculdade de Filosofia, Ciências e Letras de Ribeirão Preto e Faculdade de Medicina de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FFCLRP/FMRP"
+    },
+    "92": {
+        "nome": "Instituto de Biociências e Centro de Biologia Marinha",
+        "campus": "Butantã",
+        "abrev": "IB/CEBIMar"
+    },
+    "93": {
+        "nome": "Instituto de Astronomia, Geofísica e Ciências Atmosféricas e Instituto Oceanográfico",
+        "campus": "Butantã",
+        "abrev": "IAG/IO"
+    },
+    "94": {
+        "nome": "Escola de Enfermagem de Ribeirão Preto e Faculdade de Economia, Administração e Contabilidade de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "EERP/FEARP"
+    },
+    "95": {
+        "nome": "Faculdade de Odontologia de Ribeirão Preto e Faculdade de Ciências Farmacêuticas de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FORP/FCFRP"
+    },
+    "96": {
+        "nome": "Faculdade de Filosofia, Ciências e Letras de Ribeirão Preto e Faculdade de Economia, Administração e Contabilidade de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "FFCLRP/FEARP"
+    },
+    "97": {
+        "nome": "Escola de Engenharia de São Carlos e Instituto de Ciências Matemáticas e de Computação",
+        "campus": "São Carlos",
+        "abrev": "EESC/ICMC"
+    },
+    "98": {
+        "nome": "Escola de Educação Física e Esporte de Ribeirão Preto",
+        "campus": "Ribeirão Preto",
+        "abrev": "EEFERP"
+    },
+    "99": {
+        "nome": "Instituto de Arquitetura e Urbanismo de São Carlos",
+        "campus": "São Carlos",
+        "abrev": "IAU"
+    },
+    "100": {
+        "nome": "Faculdade de Ciências Farmacêuticas e Instituto de Ciências Biomédicas",
+        "campus": "Butantã",
+        "abrev": "FCF/ICB"
+    },
+    "101": {
+        "nome": "Instituto de Química e Faculdade de Ciências Farmacêuticas",
+        "campus": "Butantã",
+        "abrev": "IQ/FCF"
+    },
+    "102": {
+        "nome": "Faculdade de Saúde Pública e Faculdade de Ciências Farmacêuticas",
+        "campus": "Quadrilátero",
+        "abrev": "FSP/FCF"
+    }
+}

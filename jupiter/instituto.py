@@ -8,15 +8,16 @@ class Instituto:
     Unidade de ensino cadastrada no Jupiterweb.
     """
 
-    def __init__(self, codigo: str, nome: str, campus: str) -> None:
+    def __init__(self, codigo: str, nome: str, campus: str, abrev: str) -> None:
         self.codigo = str(codigo)
         self.nome = nome
         self.campus = campus
+        self.abrev = abrev
         self.disciplinas = []
         self._carregado = False
 
     def __repr__(self) -> str:
-        return f"Instituto(codigo='{self.codigo}',nome='{self.nome}',campus='{self.campus}')"
+        return f"Instituto(codigo='{self.codigo}',nome='{self.nome}',campus='{self.campus}',abrev='{self.abrev}')"
 
     def __str__(self) -> str:
         return f"{self.nome} ({self.codigo}) - Campus {self.campus}"
