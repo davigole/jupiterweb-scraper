@@ -117,7 +117,7 @@ O mesmo vale para objetos `Disciplina` — os dados são obtidos somente na prim
 
 #### Dados da disciplina
 
-A função `Disciplina.obter_dados()` retorna um dicionário com os dados obtidos no scraping da disciplina, como a seguir
+A função `Disciplina.obter_dados()` retorna um dicionário com as informações obtidas no scraping da disciplina, como a seguir
 ```python
 >>> from jupiterweb import Disciplina
 >>> disciplina = Disciplina("CBM0190")
@@ -147,28 +147,29 @@ A função `Disciplina.obter_dados()` retorna um dicionário com os dados obtido
 }
 ```
 
-É importante notar que **as chaves variam de disciplina para disciplina**, dependendo das informações disponíveis no Jupiterweb. Enquanto algumas chaves são esperadas em todas as disciplinas (como "sigla", "nome", "requisitos", etc.), outras podem ser exclusivas de algumas disciplinas (como "viagem didatica" acima).
-Por isso, o scraping da página principal da disciplina no Jupiterweb percorre todos os campos disponíveis ("Ementa", "Instrumentos e Critérios de Avaliação", "Créditos Aula", etc.) e converte os seus títulos a minúsculo e sem acentos ("ementa", "instrumentos e criterios de avaliacao", "creditos aula", etc.) para usar como chaves no dicionário.
-Já outras informações, como requisitos, período ideal e oferecimento, são obtidas a partir de páginas específicas do Jupiterweb, e por isso são retornadas em chaves fixas ("requisitos", "periodo ideal" e "oferecimento", respectivamente).
+É importante notar que **as chaves do dicionário de dados variam de disciplina para disciplina**, dependendo das informações disponíveis no Jupiterweb. Enquanto algumas chaves são esperadas em todas as disciplinas (como "sigla", "nome", "requisitos", etc.), outras podem ser exclusivas de algumas disciplinas (como "viagem didatica" acima).
+
+O processo de scraping da página principal da disciplina no Jupiterweb percorre todos os campos disponíveis ("Ementa", "Instrumentos e Critérios de Avaliação", "Créditos Aula", etc.) e converte os seus títulos para minúsculo e sem acentos ("ementa", "instrumentos e criterios de avaliacao", "creditos aula", etc.) para usar como chaves no dicionário.
+Já outras informações, como requisitos, período ideal e oferecimento, são obtidas a partir de páginas específicas do Jupiterweb, e por isso ficam em chaves fixas ("requisitos", "periodo ideal" e "oferecimento", respectivamente).
 
 Algumas seções da página principal da disciplina possuem subseções, como "Viagem Didática" e "Instrumentos e Critérios de Avaliação" acima. Nesses casos, os dados são organizados em um dicionário aninhado, onde as chaves do dicionário interno correspondem aos títulos das subseções ("e estruturante?", "atividades a serem desenvolvidas", "método de avaliação", "critério de avaliação", etc.).
 
 #### Requisitos da disciplina
 
 No Jupiterweb, os requisitos de uma disciplina são organizados em cursos.
-Para cada curso, os requisitos são organizados em conjuntos de alternativas — o aluno deve satisfazer um conjunto **ou** outro.
-Por exemplo, podem ser da forma
+Para cada curso, os requisitos são organizados em conjuntos de alternativas: o aluno daquele curso deve satisfazer um conjunto **ou** outro.
+Ou seja, os requisitos podem ser da forma
 > "Para fazer a disciplina *X*, o aluno do curso *123* precisa ter cursado as disciplinas *A* e *B*, ou ter cursado as disciplinas *C* e *D*, ou ter cursado a disciplina *E*."
 
 A imagem abaixo mostra que, para fazer a disciplina "*MAE0227 - Probabilidade II*", alunos do curso "*45031 Matemática - Bacharelado (integral)*" precisam ter cursado as disciplinas "*MAE0127*" e "*MAT2453*", **ou** ter cursado a disciplina "*MAE0121*":
 
-![Requisitos de MAE0227 no Jupiterweb](images/exemplo_requisitos_1.png)
+![Requisitos de MAE0227 no Jupiterweb](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_requisitos_1.png)
 
-Uma mesma disciplina pode estar em dois grupos de alternativas. Por exemplo, para fazer "*MAT0334-Análise Funcional*", alunos do curso "*45031 Matemática - Bacharelado*" devem ter cursado "*MAT0222*" e "*MAT0311*", ou ter cursado "*MAT0222*" e "*MAT0317*" (então "*MAT0222*" é obrigatória):
+Uma mesma disciplina pode estar em dois grupos de alternativas. Por exemplo, para fazer "*MAT0334 - Análise Funcional*", alunos do curso "*45031 Matemática - Bacharelado*" devem ter cursado "*MAT0222*" e "*MAT0311*", ou ter cursado "*MAT0222*" e "*MAT0317*" (então "*MAT0222*" é obrigatória):
 
-![Requisitos de MAT0334 no Jupiterweb](images/exemplo_requisitos_2.png)
+![Requisitos de MAT0334 no Jupiterweb](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_requisitos_2.png)
 
-Para representar essa estrutura, os requisitos de uma disciplina ficam armazenados em um dicionário, cujas chaves são os cursos, e os valores são listas de alternativas. Cada alternativa é uma lista de requisitos. Por exemplo, `{'curso': [[x, y], [w, z]]}` significa que alunos de `curso` devem ter feito `x` e `y`, ou ter feito `w` e `z`, para cursar a disciplina correspondente.
+Para representar essa estrutura, os requisitos de uma disciplina ficam armazenados em um dicionário, cujas chaves são cursos, e os valores são as listas de alternativas correspondentes. Cada alternativa é uma lista de requisitos. Por exemplo, `disciplina.obter_dados()["requisitos"] = {'CURSO': [[x, y], [w, z]]}` mostra que, para cursar a `disciplina`,alunos de `"CURSO"` devem ter cumprido os requisitos `x` e `y`, **ou** os requisitos `w` e `z`.
 O código abaixo elucida essa ideia:
 
 ```python
@@ -187,10 +188,10 @@ O código abaixo elucida essa ideia:
 }
 ```
 
-Cada requisito é representado como um objeto da classe `Requisito`, que possui a sigla da disciplina que exige, e o tipo do requisito (em letras minúsculas).
+Cada requisito é representado como um objeto da classe `Requisito`, que armazena a sigla da disciplina que exige, e o tipo do requisito (em letras minúsculas).
 No Jupiterweb, alguns requisitos possuem tipos especiais ("requisito fraco", "indicação de conjunto", etc.) Por exemplo,
 
-![Requisitos de RCG4041 no Jupiterweb](images/exemplo_requisitos_3.png)
+![Requisitos de RCG4041 no Jupiterweb](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_requisitos_3.png)
 
 Os requisitos do tipo "*Indicação de Conjunto*" acima ficam armazenados como a seguir:
 ```python
@@ -208,17 +209,16 @@ Os requisitos do tipo "*Indicação de Conjunto*" acima ficam armazenados como a
 }
 ```
 
-Também é possível obter o período ideal da disciplina para cada curso, que fica disponível na página de requisitos de Jupiterweb. Ele fica armazenado em um dicionário de forma semelhante ao de requisitos:
+Também é possível obter o período ideal da disciplina para cada curso, que fica disponível na página de requisitos de Jupiterweb. Esses dados ficam armazenados em um dicionário semelhante ao de requisitos:
 ```python
 >>> from jupiterweb import Disciplina
->>> disciplina = Disciplina("0420131")
+>>> disciplina = Disciplina("MAE0501")
 >>> dados = disciplina.obter_dados()
 >>> dados["periodo ideal"]
 {
-    '47011 Psicologia - Habilitação: Psicólogo (integral)': 3,
-    '47011 Psicologia - Habilitação: Psicologia - Bacharelado (integral)': 3,
-    '47012 Psicologia - Habilitação: Psicólogo (integral)': 3,
-    '47012 Psicologia - Habilitação: Psicologia - Bacharelado (integral)': 3,
+    '12042 Bacharelado em Ciências Atuariais (noturno)': 6,
+    '45061 Estatística - Bacharelado (integral)': 8,
+    '45062 Estatística - Bacharelado (integral)': 6,
 }
 ```
 
@@ -231,6 +231,7 @@ Caso queira contribuir mas não saiba por onde começar, aqui estão algumas mel
 - Obter informações sobre docentes (nome, instituto, departamento, disciplinas que ministra/ministrou, etc.)
 - Obter informações do calendário escolar, disponível em PDF no Jupiterweb
 - Controle de erros mais robusto, para lidar com as inconsistências do Jupiterweb
+- Carregamento segmentado dos dados da disciplina, para evitar que o processo de scraping demore muito (por exemplo, para obter apenas o nome da disciplina, não deveríamos fazer scraping das páginas de requisitos e de oferecimento)
 - Testes automáticos para verificar o funcionamento do scraping
 - Documentação mais completa e exemplos de uso
 - Qualquer alteração nas funções de scraping que torne a biblioteca mais robusta
