@@ -10,9 +10,9 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
 authors = [
-    { name = "Davi Golebiovski", email = "davi.gole@imejr.com" },
-    { name = "Isaque Nascimento", email = "isaque.nascimento@imejr.com" },
-    { name = "Lucas Kevin Silva Muniz", email = "lucas.muniz@imejr.com" },
+    { name = "Davi Golebiovski" },
+    { name = "Isaque Nascimento" },
+    { name = "Lucas Kevin Silva Muniz" },
 ]
 keywords = ["usp", "jupiterweb", "scraper", "universidade", "web", "university"]
 classifiers = [
