@@ -70,8 +70,8 @@ E a partir de uma disciplina, podemos obter os seus dados completos:
 
 Caso já conheça o código do instituto, é possível instanciá-lo diretamente:
 ```python
->>> import jupiterweb
->>> instituto = jupiterweb.Instituto("27", "Escola de Comunicações e Artes", "Butantã", "ECA")
+>>> from jupiterweb import Instituto
+>>> instituto = Instituto("27", "Escola de Comunicações e Artes", "Butantã", "ECA")
 >>> disciplinas_instituto = instituto.obter_disciplinas()
 >>> disciplinas_instituto[30]
 Disciplina(sigla='CAP0260')
@@ -81,7 +81,8 @@ Disciplina(sigla='CAP0260')
 
 Da mesma forma, é possível instanciar uma disciplina diretamente por sua sigla:
 ```python
->>> disciplina = jupiterweb.Disciplina("MAT0112")
+>>> from jupiterweb import Disciplina
+>>> disciplina = Disciplina("MAT0112")
 >>> dados = disciplina.obter_dados()
 >>> dados["nome"]
 'Vetores e Geometria'
