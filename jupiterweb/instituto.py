@@ -8,7 +8,7 @@ class Instituto:
     Unidade de ensino cadastrada no Jupiterweb.
     """
 
-    def __init__(self, codigo: str, nome: str, campus: str, abrev: str) -> None:
+    def __init__(self, codigo: str, nome: str, campus: str = "", abrev: str = "") -> None:
         self.codigo = str(codigo)
         self.nome = nome
         self.campus = campus
