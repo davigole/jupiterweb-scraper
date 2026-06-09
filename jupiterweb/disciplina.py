@@ -23,9 +23,6 @@ class Disciplina:
     def __str__(self) -> str:
         return self.sigla
 
-    def __getitem__(self, key: str) -> Any:
-        return self.obter_dados()[key]
-
     def obter_dados(self) -> dict[str, Any]:
         """
         Retorna dados da disciplina no Jupiterweb. Se disciplina ainda nao foi carregada,
