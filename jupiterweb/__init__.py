@@ -5,7 +5,7 @@ from .instituto import Instituto
 from .jupiterweb import obter_institutos
 
 try:
-    __version__ = importlib.metadata.version("your_package")
+    __version__ = importlib.metadata.version("jupiterweb-scraper")
 except importlib.metadata.PackageNotFoundError:
     __version__ = "0.0.0"
 
