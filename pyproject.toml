@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jupiterweb-scraper"
-version = "1.0.1"
+version = "1.0.2"
 description = "Extração de informações sobre disciplinas da Universidade de São Paulo a partir do Jupiterweb"
 readme = "README.md"
 license = { file = "LICENSE" }
