@@ -184,12 +184,12 @@ class Disciplina:
         self._dados["oferecimento"] = []
 
         soup = obter_soup(self.url_oferecimento)
-        table = soup.select_one("div#layout_principal > table:nth-of-type(4)")
+        table = soup.select_one("div#layout_principal > table:nth-of-type(4) td")
 
         if not table:
             return  # sem oferecimentos
 
-        boxes = table.select_one("td").find_all("div", recursive=False)
+        boxes = table.find_all("div", recursive=False)
 
         for box in boxes:
             box_tables = box.find_all("table", recursive=False)
@@ -207,40 +207,49 @@ class Disciplina:
                 sigla_disciplina=self.sigla,
             )
 
+            # ----- Horarios e vagas -----
+            horarios_rows = None
+            vagas_rows = None
+
+            if len(box_tables) >= 2:
+                if len(box_tables) >= 3:  # horarios e vagas
+                    horarios_rows = box_tables[1].find_all("tr", recursive=False)[1:]
+                    vagas_rows = box_tables[2].find_all("tr", recursive=False)
+                else:  # apenas vagas (sem horarios)
+                    vagas_rows = box_tables[1].find_all("tr", recursive=False)
+
             # ----- Horarios -----
-            horarios_rows = box_tables[1].find_all("tr", recursive=False)[1:]
-
-            for row in horarios_rows:
-                row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
-                row_text = [(row_text[i] if len(row_text) > i else "") for i in range(4)]
-
-                oferecimento.adicionar_horario(row_text[0], row_text[1], row_text[2], row_text[3])
+            if horarios_rows:
+                for row in horarios_rows:
+                    row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
+                    row_text = [(row_text[i] if len(row_text) > i else "") for i in range(4)]
+                    oferecimento.adicionar_horario(row_text[0], row_text[1], row_text[2], row_text[3])
 
             # ----- Vagas -----
-            vagas_rows = box_tables[2].find_all("tr", recursive=False)
-            vagas_labels = [i.get_text(strip=True).lower() for i in vagas_rows[0].find_all("td", recursive=False)][1:]
-            vagas_labels = [self._normalizar_titulo(i) for i in vagas_labels]
+            if vagas_rows:
+                vagas_labels = [i.get_text(strip=True).lower() for i in vagas_rows[0].find_all("td", recursive=False)][1:]
+                vagas_labels = [self._normalizar_titulo(i) for i in vagas_labels]
 
-            tipo_vaga = ""
+                tipo_vaga = ""
 
-            for row in vagas_rows[1:]:
-                row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
+                for row in vagas_rows[1:]:
+                    row_text = [i.get_text(strip=True) for i in row.find_all("td", recursive=False)]
 
-                istitle = row_text[0] != ""
-                if not istitle:
-                    row_text = row_text[1:]
+                    istitle = row_text[0] != ""
+                    if not istitle:
+                        row_text = row_text[1:]
 
-                row_name = row_text[0]
-                row_vals = [(int(i) if i.isnumeric() else "-") for i in row_text[1:]]
-                row_vals = [(row_vals[i] if len(row_vals) > i else "-") for i in range(len(vagas_labels))]
-                row_items = {vagas_labels[i]: row_vals[i] for i in range(len(vagas_labels))}
+                    row_name = row_text[0]
+                    row_vals = [(int(i) if i.isnumeric() else "-") for i in row_text[1:]]
+                    row_vals = [(row_vals[i] if len(row_vals) > i else "-") for i in range(len(vagas_labels))]
+                    row_items = {vagas_labels[i]: row_vals[i] for i in range(len(vagas_labels))}
 
-                if istitle:  # novo tipo de vaga
-                    tipo_vaga = self._normalizar_titulo(row_name)
-                    oferecimento.vagas[tipo_vaga] = row_items
-                    oferecimento.vagas[tipo_vaga]["cursos"] = {}
-                else:
-                    oferecimento.vagas[tipo_vaga]["cursos"][row_name] = row_items
+                    if istitle:  # novo tipo de vaga
+                        tipo_vaga = self._normalizar_titulo(row_name)
+                        oferecimento.vagas[tipo_vaga] = row_items
+                        oferecimento.vagas[tipo_vaga]["cursos"] = {}
+                    else:
+                        oferecimento.vagas[tipo_vaga]["cursos"][row_name] = row_items
 
             self._dados["oferecimento"].append(oferecimento)
 
