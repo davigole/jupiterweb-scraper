@@ -29,15 +29,19 @@ class Instituto:
         disciplinas, que é feito sob demanda).
         """
 
-        if self._carregado:
-            return
-
         soup = obter_soup(self.url_listagem)
         disciplina_rows = soup.select("tr[bgcolor='#658CCF'] ~tr")
 
         for row in disciplina_rows:
             tds = row.find_all("td")
-            sigla = tds[0].find("span").get_text(strip=True)
+            if not tds:
+                continue
+
+            sigla_span = tds[0].find("span")
+            if not sigla_span:
+                continue
+
+            sigla = sigla_span.get_text(strip=True)
             self.disciplinas.append(Disciplina(sigla))
 
         self._carregado = True
