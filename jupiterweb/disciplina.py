@@ -1,7 +1,6 @@
 import re
 import unicodedata
 from typing import Any
-from warnings import warn
 
 from .urls import URLS
 from .utils import obter_soup, truncate_string
@@ -71,17 +70,18 @@ class Disciplina:
         title = re.sub(r" +", " ", title)
         return title
 
-    def _carregar_principal(self) -> None:
+    def _carregar_principal(self) -> bool:
         """
         Faz scraping da página principal da disciplina e armazena os dados obtidos.
+        Retorna `True` se a página foi carregada com sucesso, e `False` caso contrário
+        (por exemplo, se a disciplina não existir).
         """
 
         soup = obter_soup(self.url_principal)
 
         table = soup.select_one("form[name='form1'] > table")
         if not table:
-            warn(f"Nao foi possivel carregar pagina principal da disciplina {self.sigla}")
-            return
+            return False  # disciplina nao encontrada
 
         # ----- Texto centralizado -----
         centered_text = [i.get_text(strip=True) for i in table.select("td[align='CENTER']")]
@@ -125,6 +125,8 @@ class Disciplina:
                 else:
                     self._dados[title] += "\n" + text if self._dados[title] and text else text
                     added_text = True  # mesmo se text = "" o titulo nao pode ter subtitulos
+
+        return True
 
     def _carregar_requisitos(self) -> None:
         """
@@ -263,13 +265,35 @@ class Disciplina:
         """
 
         self._dados = {}
-        self._dados["sigla"] = self.sigla
+        encontrada = self._carregar_principal()
 
-        self._carregar_principal()
+        if not encontrada:
+            self._dados = {}  # sinaliza que disciplina nao foi encontrada
+            self._carregado = True
+            return
+
         self._carregar_requisitos()
         self._carregar_oferecimento()
-
         self._carregado = True
+
+    def encontrada(self) -> bool:
+        """
+        Retorna `True` se a disciplina foi encontrada no Jupiterweb, e `False` caso
+        contrário (por exemplo, se a sigla da disciplina não existir). Se não houve
+        tentativa anterior de carregar os dados, faz o carregamento da disciplina antes
+        de retornar o resultado.
+        """
+
+        return bool(self.obter_dados())
+
+    def possui_oferecimento(self) -> bool:
+        """
+        Retorna `True` se a disciplina possui algum oferecimento de turma no Jupiterweb,
+        e `False` caso contrário. Se não houve tentativa anterior de carregar os dados,
+        faz o carregamento da disciplina antes de retornar o resultado.
+        """
+
+        return bool(self.obter_dados().get("oferecimento"))
 
     def mostrar(self, trunc_str: bool = True) -> None:
         """
