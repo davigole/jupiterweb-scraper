@@ -13,7 +13,7 @@ class Instituto:
         self.nome = nome
         self.campus = campus
         self.abrev = abrev
-        self.disciplinas = []
+        self._disciplinas = []
         self._carregado = False
 
     def __repr__(self) -> str:
@@ -24,11 +24,11 @@ class Instituto:
 
     def _carregar(self) -> None:
         """
-        Faz scraping da pagina com as disciplinas do instituto e armazena
-        os objetos do tipo Disciplina correspondentes (delega o scraping das
-        disciplinas, que é feito sob demanda).
+        Faz scraping da página de disciplinas do instituto. Armazena as disciplinas
+        encontradas e marca o instituto como carregado.
         """
 
+        self._disciplinas = []
         soup = obter_soup(self.url_listagem)
         disciplina_rows = soup.select("tr[bgcolor='#658CCF'] ~tr")
 
@@ -42,24 +42,27 @@ class Instituto:
                 continue
 
             sigla = sigla_span.get_text(strip=True)
-            self.disciplinas.append(Disciplina(sigla))
+            self._disciplinas.append(Disciplina(sigla))
 
         self._carregado = True
 
     @property
     def url_listagem(self) -> str:
         """
-        URL do Jupiterweb com todas as disciplinas oferecidas pela unidade de ensino.
+        URL da página de disciplinas do instituto no Jupiterweb.
         """
 
         return URLS["listagem"].format(codigo=self.codigo)
 
-    def obter_disciplinas(self) -> list[Disciplina]:
+    def obter_disciplinas(self, force: bool = False) -> list[Disciplina]:
         """
-        Retorna lista de disciplinas oferecidas no instituto.
+        Retorna lista de disciplinas oferecidas no instituto. Faz scraping da página de
+        disciplinas do instituto caso ainda não tenha sido feito. Se `force` for `True`,
+        força o recarregamento da lista de disciplinas, mesmo que já tenha sido
+        carregada antes.
         """
 
-        if not self._carregado:
+        if not self._carregado or force:
             self._carregar()
 
-        return self.disciplinas
+        return self._disciplinas

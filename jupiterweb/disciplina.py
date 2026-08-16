@@ -23,20 +23,21 @@ class Disciplina:
     def __str__(self) -> str:
         return self.sigla
 
-    def obter_dados(self) -> dict[str, Any]:
+    def obter_dados(self, force: bool = False) -> dict[str, Any]:
         """
-        Retorna dados da disciplina no Jupiterweb. Se disciplina ainda nao foi carregada,
-        faz o scraping antes de retornar.
+        Retorna dicionário com os dados da disciplina. Faz scraping das páginas da
+        disciplina caso ainda não tenha sido feito. Se `force` for `True`, força o
+        recarregamento dos dados, mesmo que já tenham sido carregados antes.
         """
 
-        if not self._carregado:
+        if not self._carregado or force:
             self._carregar()
         return self._dados
 
     @property
     def url_principal(self) -> str:
         """
-        URL da pagina principal da disciplina no Jupiterweb.
+        URL da página principal da disciplina no Jupiterweb.
         """
 
         return URLS["disciplina"].format(sigla=self.sigla)
@@ -44,7 +45,7 @@ class Disciplina:
     @property
     def url_oferecimento(self) -> str:
         """
-        URL da pagina de oferecimentos da disciplina no Jupiterweb.
+        URL da página de oferecimentos da disciplina no Jupiterweb.
         """
 
         return URLS["oferecimento"].format(sigla=self.sigla)
@@ -52,14 +53,15 @@ class Disciplina:
     @property
     def url_requisitos(self) -> str:
         """
-        URL da pagina de requisitos da disciplina no Jupiterweb.
+        URL da página de requisitos da disciplina no Jupiterweb.
         """
 
         return URLS["requisitos"].format(sigla=self.sigla)
 
     def _normalizar_titulo(self, title: str) -> str:
         """
-        Converte titulo ao formato padrao para chaves de dicionario.
+        Converte título de seção da página da disciplina em uma string normalizada, para
+        ser usada como chave no dicionário de dados da disciplina.
         """
 
         title = title.strip().rstrip(":")
@@ -71,7 +73,7 @@ class Disciplina:
 
     def _carregar_principal(self) -> None:
         """
-        Faz scraping da pagina principal da disciplina e armazena os dados obtidos.
+        Faz scraping da página principal da disciplina e armazena os dados obtidos.
         """
 
         soup = obter_soup(self.url_principal)
@@ -126,7 +128,7 @@ class Disciplina:
 
     def _carregar_requisitos(self) -> None:
         """
-        Faz scraping da pagina de requisitos da disciplina e armazena os dados obtidos.
+        Faz scraping da página de requisitos da disciplina e armazena os dados obtidos.
         """
 
         # dados["requisitos"][curso] = [["x"], ["y", "z"]] significa que, para fazer a
@@ -178,7 +180,8 @@ class Disciplina:
 
     def _carregar_oferecimento(self) -> None:
         """
-        Faz scraping da pagina de oferecimento da disciplina e armazena os dados obtidos.
+        Faz scraping da página de oferecimentos da disciplina e armazena os dados
+        obtidos.
         """
 
         self._dados["oferecimento"] = []
@@ -255,29 +258,23 @@ class Disciplina:
 
     def _carregar(self) -> None:
         """
-        Faz scraping da disciplina e armazena os seus dados.
+        Faz scraping da disciplina e armazena os seus dados. Marca a disciplina como
+        carregada.
         """
 
-        self._dados = {
-            "sigla": self.sigla,
-        }
+        self._dados = {}
+        self._dados["sigla"] = self.sigla
 
         self._carregar_principal()
         self._carregar_requisitos()
         self._carregar_oferecimento()
+
         self._carregado = True
-
-    def possui_oferecimento(self) -> bool:
-        """
-        Verifica se disciplina tem algum oferecimento no semestre atual.
-        """
-
-        return bool(self.obter_dados().get("oferecimento"))
 
     def mostrar(self, trunc_str: bool = True) -> None:
         """
-        Mostra dados da disciplina de forma legivel. Utilizada principalmente
-        para debug. Se trunc_str = True, strings longas serao truncadas.
+        Mostra os dados da disciplina no console, de forma organizada. Se `trunc_str`
+        for `True`, strings longas serão truncadas para não ocupar muito espaço na tela.
         """
 
         LARGURA = 120
@@ -317,7 +314,7 @@ class Requisito:
 
     def obter_disciplina(self) -> Disciplina:
         """
-        Retorna objeto Disciplina correspondente ao requisito.
+        Retorna objeto `Disciplina` correspondente ao requisito.
         """
 
         return Disciplina(self.sigla)
@@ -354,7 +351,7 @@ class Oferecimento:
 
     def adicionar_horario(self, dia_semana: str, hora_inicio: str, hora_fim: str, professor: str) -> None:
         """
-        Adiciona horario de aula ao oferecimento.
+        Adiciona um horário de aula ao oferecimento.
         """
 
         horario = HorarioAula(dia_semana, hora_inicio, hora_fim, professor)
@@ -363,7 +360,7 @@ class Oferecimento:
 
 class HorarioAula:
     """
-    Horario de aula no Jupiterweb.
+    Horário de aula no Jupiterweb.
     """
 
     def __init__(self, dia_semana: str, hora_inicio: str, hora_fim: str, professor: str) -> None:
