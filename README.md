@@ -34,20 +34,19 @@ A biblioteca é organizada em três níveis: **institutos** têm **disciplinas**
 ```python
 >>> import jupiterweb
 
-# Institutos da USP
+# Obter todos os institutos da USP
 >>> institutos = jupiterweb.obter_institutos()
 >>> instituto = institutos[37]
 >>> instituto
 Instituto(codigo='45',nome='Instituto de Matemática, Estatística e Ciência da Computação',campus='Butantã',abrev='IME')
 
-# Disciplinas do instituto
+# Obter as disciplinas do instituto
 >>> disciplinas = instituto.obter_disciplinas()
 >>> disciplina = disciplinas[15]
 >>> disciplina
 Disciplina(sigla='MAC0323')
 
-# Dados completos da disciplina
->>> dados = disciplina.obter_dados()
+# Obter os dados da disciplina
 >>> dados = disciplina.obter_dados()
 >>> dados["nome"]
 'Algoritmos e Estruturas de Dados II'
@@ -66,25 +65,27 @@ dict_keys([ 'instituto', 'departamento', 'nome', 'nome ingles',
 
 #### Instanciando diretamente
 
-Quando o código do instituto ou a sigla da disciplina já são conhecidos, não é necessário passar por `obter_institutos()`: os objetos podem ser instanciados diretamente.
+Quando o código do instituto ou a sigla da disciplina já são conhecidos, não é necessário passar por `obter_institutos()` ou `obter_disciplinas()`. Os objetos podem ser instanciados diretamente:
 
 ```python
 >>> from jupiterweb import Instituto, Disciplina
 
 # Obter instituto por código
 >>> instituto = Instituto("27", "Escola de Comunicações e Artes", "Butantã", "ECA")
->>> instituto.obter_disciplinas()[30]
+>>> disciplinas = instituto.obter_disciplinas()
+>>> disciplinas[30]
 Disciplina(sigla='CCA0293')
 
 # Obter disciplina por sigla
 >>> disciplina = Disciplina("MAT0112")
->>> disciplina.obter_dados()["nome"]
+>>> dados = disciplina.obter_dados()
+>>> dados["nome"]
 'Vetores e Geometria'
 ```
 
 #### Métodos auxiliares
 
-Além de `obter_dados()`, a classe `Disciplina` oferece alguns métodos utilitários para o dia a dia:
+Além de `obter_dados()`, a classe `Disciplina` oferece alguns métodos auxiliares:
 
 ```python
 >>> disciplina = Disciplina("MAC0520")
@@ -104,10 +105,10 @@ O uso básico da biblioteca é simples, mas alguns pontos merecem atenção.
 
 Como o scraping pode ser demorado, os dados de `Instituto` e `Disciplina` são carregados sob demanda, e não na criação do objeto.
 
-- Um `Instituto` recém-criado não contém disciplinas até a primeira chamada de `obter_disciplinas()`.
 - Uma `Disciplina` recém-criada não contém dados até a primeira chamada de `obter_dados()`.
+- Um `Instituto` recém-criado não contém disciplinas até a primeira chamada de `obter_disciplinas()`.
 
-A partir da primeira chamada, o resultado fica em cache no próprio objeto, e chamadas seguintes não fazem scraping novamente:
+Na primeira chamada de `obter_dados()`, a biblioteca faz scraping das páginas do Jupiterweb e armazena o resultado no objeto `Disciplina`. Chamadas seguintes retornam o resultado em cache, sem fazer scraping novamente:
 
 ```python
 >>> disciplina = Disciplina("FLT0123")
@@ -115,13 +116,13 @@ A partir da primeira chamada, o resultado fica em cache no próprio objeto, e ch
 >>> disciplina.obter_dados()  # retorna o cache (instantâneo)
 ```
 
-Para forçar um novo scraping — por exemplo, para atualizar dados que podem ter mudado — use `force=True`, tanto em `Disciplina.obter_dados()` quanto em `Instituto.obter_disciplinas()`:
+Para forçar um novo scraping — por exemplo, para atualizar dados que podem ter mudado — use `force=True`:
 
 ```python
 >>> disciplina.obter_dados(force=True)  # faz scraping novamente
 ```
 
-Analogamente,
+O mesmo vale para `obter_disciplinas()`::
 ```python
 >>> institutos = jupiterweb.obter_institutos()
 >>> instituto = institutos[21]
@@ -130,9 +131,21 @@ Analogamente,
 >>> instituto.obter_disciplinas(force=True)  # faz scraping novamente
 ```
 
+### Disciplinas inexistentes ou inválidas
+
+Quando não é possível fazer o scraping da página principal — seja porque ela está vazia, seja porque houve algum erro ao encontrá-la — a disciplina é considerada carregada, mas **inexistente**. Nesse caso, obter_dados() retorna {}, e chamadas seguintes não tentam um novo scraping, a não ser que `force=True` seja passado. Como consequência, `disciplina.encontrada()` retorna `False`:
+
+```python
+>>> disciplina = Disciplina("ABC1234")
+>>> disciplina.obter_dados()
+{}
+>>> disciplina.encontrada()
+False
+```
+
 ### Dados da disciplina
 
-`Disciplina.obter_dados()` retorna um dicionário como o abaixo:
+A função `Disciplina.obter_dados()` retorna um dicionário como o abaixo:
 
 ```python
 >>> disciplina = Disciplina("CBM0190")
@@ -162,36 +175,25 @@ Analogamente,
 }
 ```
 
-Um ponto importante: **as chaves desse dicionário variam de disciplina para disciplina**, dependendo do que está disponível no Jupiterweb.
-As chaves `"sigla"`, `"instituto"`, `"departamento"`, `"nome"`, `"nome ingles"`, `"requisitos"`, `"periodo ideal"` e `"oferecimento"` aparecem em todas as disciplinas **válidas**. Já as outras, como `"viagem didatica"` acima, só estão presentes nas páginas de algumas disciplinas específicas.
+As chaves `"sigla"`, `"instituto"`, `"departamento"`, `"nome"`, `"nome ingles"`, `"requisitos"`, `"periodo ideal"` e `"oferecimento"` são fixas, isto é, aparecem nos dados de todas as disciplinas válidas — mesmo que alguns desses valores venham vazios (`""`, `{}` ou `[]`). Já as demais chaves vêm da página principal da disciplina, e por isso **variam de disciplina para disciplina**.
 
-A maior parte das chaves vem diretamente dos campos da página principal da disciplina no Jupiterweb ("Ementa", "Instrumentos e Critérios de Avaliação", "Créditos Aula", etc.). Os títulos desses campos são convertidos para minúsculo e sem acentos para formar as chaves (`"ementa"`, `"instrumentos e criterios de avaliacao"`, `"creditos aula"`, etc.). Quando um campo tem subseções — como "Viagem Didática" no exemplo acima —, o valor correspondente é um dicionário aninhado, com uma chave para cada subseção.
+A página principal é dividida em campos como "Ementa", "Instrumentos e Critérios de Avaliação" e "Créditos Aula". A biblioteca percorre esses campos e usa seus títulos como chaves, convertendo-os para minúsculas e removendo os acentos — "Ementa" e "Créditos Aula", por exemplo, tornam-se `"ementa"` e `"creditos aula"`. Como cada disciplina exibe apenas os campos que se aplicam a ela, disciplinas diferentes acabam tendo chaves diferentes.
 
-Já `"requisitos"`, `"periodo ideal"` e `"oferecimento"` são obtidos de páginas específicas do Jupiterweb (não da página principal) e por isso sempre aparecem, mesmo que vazios, com essas chaves fixas. Cada um é detalhado a seguir.
+Alguns desses campos possuem **subseções**, que são representadas como um dicionário aninhado. Por exemplo, "Instrumentos e Critérios de Avaliação" pode conter as subseções "Método de Avaliação", "Critério de Avaliação" e "Norma de Recuperação", como acima.
 
-### Disciplinas inexistentes ou inválidas
-
-Quando não é possível fazer o scraping da página principal — seja porque ela está vazia, seja porque houve algum erro ao encontrá-la — a disciplina é considerada carregada, mas **inexistente**. Nesse caso, obter_dados() retorna {}, e chamadas seguintes não tentam um novo scraping, a não ser que `force=True` seja passado. Como consequência, `disciplina.encontrada()` retorna `False`:
-
-```python
->>> disciplina = Disciplina("ABC1234")
->>> disciplina.obter_dados()
-{}
->>> disciplina.encontrada()
-False
-```
+Devido à variabilidade das chaves desse dicionário, recomenda-se utilizar `dados.get("chave")` ao invés de `dados["chave"]` para acessar essas informações. Por exemplo, prefira `dados.get("bibliografia")` a `dados["bibliografia"]`, já que algumas disciplinas não possuem o campo "Bibliografia" em sua página.
 
 ### Requisitos
 
 No Jupiterweb, os requisitos de uma disciplina são organizados por curso. Para cada curso, os requisitos formam um ou mais conjuntos de alternativas: o aluno precisa satisfazer um conjunto **ou** outro. Ou seja, os requisitos seguem o tipo:
 
-> "Para fazer a disciplina *X*, o aluno do curso *123* precisa ter cursado as disciplinas *A* e *B*, ou ter cursado as disciplinas *C* e *D*, ou ter cursado a disciplina *E*."
+> "Para fazer a disciplina `X`, o aluno do curso `123` precisa ter cursado as disciplinas `A` e `B`, ou ter cursado as disciplinas `C` e `D`, ou ter cursado a disciplina `E`."
 
-A imagem abaixo mostra que, para fazer "*MAE0227 - Probabilidade II*", alunos do curso "*45031 Matemática - Bacharelado (integral)*" precisam ter cursado "*MAE0127*" e "*MAT2453*", **ou** ter cursado apenas "*MAE0121*":
+A imagem abaixo mostra que, para fazer `"MAE0227 - Probabilidade II"`, alunos do curso `"45031 Matemática - Bacharelado (integral)"` precisam ter cursado `"MAE0127"` e `"MAT2453"`, **ou** ter cursado `"MAE0121"` apenas:
 
 ![Requisitos de MAE0227 no Jupiterweb](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_requisitos_1.png)
 
-Uma mesma disciplina pode aparecer em mais de um grupo de alternativas — nesse caso, ela é obrigatória em ambos os caminhos. Por exemplo, para "*MAT0334 - Análise Funcional*", alunos do curso "*45031 Matemática - Bacharelado*" precisam ter cursado "*MAT0222*" e "*MAT0311*", ou ter cursado "*MAT0222*" e "*MAT0317*" ("*MAT0222*" é sempre necessária):
+Uma mesma disciplina pode aparecer em mais de um grupo de alternativas — nesse caso, ela é obrigatória em ambos os caminhos. Por exemplo, para `"MAT0334 - Análise Funcional"`, alunos do curso `"45031 Matemática - Bacharelado"` precisam ter cursado `"MAT0222"` e `"MAT0311"`, ou ter cursado `"MAT0222"` e `"MAT0317"` (`"MAT0222"`  é sempre necessária):
 
 ![Requisitos de MAT0334 no Jupiterweb](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_requisitos_2.png)
 
@@ -211,7 +213,7 @@ Essa estrutura é representada por um dicionário cujas chaves são os cursos, e
 }
 ```
 
-Cada requisito é um objeto `Requisito`, que guarda a sigla da disciplina exigida e o tipo do requisito (em letras minúsculas). O Jupiterweb também usa tipos especiais, como "requisito fraco" e "indicação de conjunto":
+Cada requisito é um objeto `Requisito`, que guarda a sigla da disciplina exigida e o tipo do requisito (em letras minúsculas). O Jupiterweb também usa tipos especiais, como "Requisito Fraco" e "Indicação de Conjunto":
 
 ```python
 >>> disciplina = Disciplina("RCG4041")
@@ -239,7 +241,7 @@ Disciplina(sigla='RCG4040')
 
 ### Período ideal
 
-O período ideal de uma disciplina também é organizado por curso, e fica disponível na mesma página de requisitos do Jupiterweb. Os dados ficam em um dicionário simples, mapeando curso para o semestre recomendado:
+O período ideal de uma disciplina também é organizado por curso, e fica disponível na página de requisitos da disciplina no Jupiterweb. Os dados ficam em um dicionário simples, mapeando curso para o semestre recomendado:
 
 ```python
 >>> disciplina = Disciplina("MAE0501")
@@ -254,7 +256,7 @@ O período ideal de uma disciplina também é organizado por curso, e fica dispo
 
 ### Oferecimento (turmas)
 
-A chave `"oferecimento"` traz a lista de turmas já abertas para a disciplina, cada uma representada por um objeto `Oferecimento`. Cada `Oferecimento` guarda dados básicos da turma (código, datas de início e fim, tipo de turma, observações), além de:
+A chave `"oferecimento"` traz a lista das turmas atualmente oferecidas para a disciplina, cada uma representada por um objeto `Oferecimento`. Cada `Oferecimento` guarda dados básicos da turma (código, datas de início e fim, tipo de turma, observações), além de:
 
 - **`horarios`**: lista de objetos `HorarioAula`, cada um com dia da semana, horário de início e fim, e o professor responsável.
 - **`vagas`**: dicionário com as vagas oferecidas no oferecimento, por tipo (ex.: vagas para a USP, vagas remanescentes) e por curso, conforme disponibilizado na página de oferecimento do Jupiterweb.
@@ -302,7 +304,7 @@ Oferecimento(codigo='2026247',data_inicio='03/08/2026',data_fim='12/12/2026',tip
 ![Oferecimento de Turma de MAC0110](https://raw.githubusercontent.com/davigole/jupiterweb-scraper/refs/heads/main/images/exemplo_oferecimento_1.png)
 
 
-As chaves dentro de `vagas` (nomes dos tipos de vaga e das colunas, como `"oferecidas"`) seguem exatamente o que está disponível na página do Jupiterweb, e podem variar de disciplina para disciplina.
+As chaves dentro de `vagas` (nomes dos tipos de vaga e das colunas) seguem exatamente o que está disponível na página do Jupiterweb, e podem variar de disciplina para disciplina.
 
 ## 🤝 Como contribuir
 
