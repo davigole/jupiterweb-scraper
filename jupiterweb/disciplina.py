@@ -274,6 +274,7 @@ class Disciplina:
 
         self._carregar_requisitos()
         self._carregar_oferecimento()
+        self._dados["sigla"] = self
         self._carregado = True
 
     def encontrada(self) -> bool:
