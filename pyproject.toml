@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
     "requests>=2.34.2",
     "beautifulsoup4>=4.15.0",
+    "tenacity>=8.2,<10",
 ]
 
 [project.urls]
