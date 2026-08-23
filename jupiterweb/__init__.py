@@ -12,8 +12,8 @@ except importlib.metadata.PackageNotFoundError:
 __all__ = [
     "Disciplina",
     "HorarioAula",
+    "Instituto",
     "Oferecimento",
     "Requisito",
-    "Instituto",
     "obter_institutos",
 ]
