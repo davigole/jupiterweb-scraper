@@ -9,7 +9,7 @@ class Instituto:
     """
 
     def __init__(self, codigo: str, nome: str, campus: str = "", abrev: str = "") -> None:
-        self.codigo = str(codigo)
+        self.codigo = str(codigo).strip().upper()
         self.nome = nome
         self.campus = campus
         self.abrev = abrev
@@ -42,7 +42,7 @@ class Instituto:
                 continue
 
             sigla = sigla_span.get_text(strip=True)
-            self._disciplinas.append(Disciplina(sigla))
+            self._disciplinas.append(Disciplina(sigla, codigo_instituto=self.codigo))
 
         self._carregado = True
 

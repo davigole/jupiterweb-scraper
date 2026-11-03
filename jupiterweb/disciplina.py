@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import unicodedata
 from typing import Any
@@ -11,8 +13,9 @@ class Disciplina:
     Disciplina cadastrada no Jupiterweb.
     """
 
-    def __init__(self, sigla: str) -> None:
-        self.sigla = str(sigla).upper()
+    def __init__(self, sigla: str, codigo_instituto: str | None = None) -> None:
+        self.sigla = str(sigla).strip().upper()
+        self.codigo_instituto = str(codigo_instituto).strip().upper() if codigo_instituto is not None else None
         self._dados: dict[str, Any] = {}
         self._carregado = False
 

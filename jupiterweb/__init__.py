@@ -2,7 +2,7 @@ import importlib.metadata
 
 from .disciplina import Disciplina, HorarioAula, Oferecimento, Requisito
 from .instituto import Instituto
-from .jupiterweb import obter_institutos
+from .jupiterweb import obter_instituto, obter_institutos
 
 try:
     __version__ = importlib.metadata.version("jupiterweb-scraper")
@@ -15,5 +15,6 @@ __all__ = [
     "Instituto",
     "Oferecimento",
     "Requisito",
+    "obter_instituto",
     "obter_institutos",
 ]
